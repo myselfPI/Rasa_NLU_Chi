@@ -1,0 +1,8 @@
+language: "zh"
+
+pipeline:
+- name: "nlp_word2vec"
+  model: "data/total_word_feature_extractor_zh.dat"
+- name: "tokenizer_jieba"
+- name: "intent_featurizer_word2vec"
+- name: "intent_classifier_sklearn"

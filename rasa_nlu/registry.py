@@ -40,6 +40,8 @@ from rasa_nlu.tokenizers.jieba_tokenizer import JiebaTokenizer
 from rasa_nlu.tokenizers.whitespace_tokenizer import WhitespaceTokenizer
 from rasa_nlu.utils.mitie_utils import MitieNLP
 from rasa_nlu.utils.spacy_utils import SpacyNLP
+from rasa_nlu.utils.word2vec_utils import Word2VecNLP
+from rasa_nlu.featurizers.word2vec_featurizer import Word2VecFeaturizer
 
 if typing.TYPE_CHECKING:
     from rasa_nlu.components import Component
@@ -48,11 +50,11 @@ if typing.TYPE_CHECKING:
 # Classes of all known components. If a new component should be added,
 # its class name should be listed here.
 component_classes = [
-    SpacyNLP, MitieNLP,
+    SpacyNLP, MitieNLP, Word2VecNLP,
     SpacyEntityExtractor, MitieEntityExtractor, DucklingExtractor,
     CRFEntityExtractor, DucklingHTTPExtractor,
     EntitySynonymMapper,
-    SpacyFeaturizer, MitieFeaturizer, NGramFeaturizer, RegexFeaturizer,
+    SpacyFeaturizer, MitieFeaturizer, NGramFeaturizer, RegexFeaturizer,Word2VecFeaturizer,
     CountVectorsFeaturizer,
     MitieTokenizer, SpacyTokenizer, WhitespaceTokenizer, JiebaTokenizer,
     SklearnIntentClassifier, MitieIntentClassifier, KeywordIntentClassifier,

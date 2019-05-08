@@ -16,7 +16,9 @@ from typing import Text
 from typing import Tuple
 
 import numpy as np
-
+import traceback
+import json
+import jsonpickle
 from rasa_nlu import utils
 from rasa_nlu.classifiers import INTENT_RANKING_LENGTH
 from rasa_nlu.components import Component
@@ -110,12 +112,15 @@ class SklearnIntentClassifier(Component):
     def train(self, training_data, cfg, **kwargs):
         # type: (TrainingData, RasaNLUModelConfig, **Any) -> None
         """Train the intent classifier on a data set."""
+        print("train")
+        print(training_data)
 
         num_threads = kwargs.get("num_threads", 1)
 
         labels = [e.get("intent")
                   for e in training_data.intent_examples]
-
+        print("labels")
+        print(labels)
         if len(set(labels)) < 2:
             logger.warn("Can not train an intent classifier. "
                         "Need at least 2 different classes. "
@@ -124,13 +129,22 @@ class SklearnIntentClassifier(Component):
             y = self.transform_labels_str2num(labels)
             X = np.stack([example.get("text_features")
                           for example in training_data.intent_examples])
-
+            print("yresult")
+            print(y)
+            print("X-Content")
+            print([example.get("text_features")
+                          for example in training_data.intent_examples])
+            print("X")
+            print(X)
             self.clf = self._create_classifier(num_threads, y)
 
             self.clf.fit(X, y)
+        traceback.print_stack()
 
     def _num_cv_splits(self, y):
         folds = self.component_config["max_cross_validation_folds"]
+        print("max_cross_validation_folds")
+        print(folds)
         return max(2, min(folds, np.min(np.bincount(y)) // 5))
 
     def _create_classifier(self, num_threads, y):
@@ -143,11 +157,15 @@ class SklearnIntentClassifier(Component):
         # str not instance of basestr...
         tuned_parameters = [{"C": C,
                              "kernel": [str(k) for k in kernels]}]
-
+        print("C")
+        print(C)
+        print("tuned_parameters")
+        print(tuned_parameters)
         # aim for 5 examples in each fold
 
         cv_splits = self._num_cv_splits(y)
-
+        print("cv_splits")
+        print(cv_splits)
         return GridSearchCV(SVC(C=1,
                                 probability=True,
                                 class_weight='balanced'),
@@ -240,4 +258,5 @@ class SklearnIntentClassifier(Component):
 
         classifier_file = os.path.join(model_dir, SKLEARN_MODEL_FILE_NAME)
         utils.pycloud_pickle(classifier_file, self)
+        print(jsonpickle.encode(self))
         return {"classifier_file": SKLEARN_MODEL_FILE_NAME}
